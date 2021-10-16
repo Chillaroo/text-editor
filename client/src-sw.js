@@ -1,5 +1,5 @@
 const { offlineFallback, warmStrategyCache } = require('workbox-recipes');
-const { CacheFirst } = require('workbox-strategies');
+const { CacheFirst, StaleWhileRevalidate } = require('workbox-strategies');
 const { registerRoute } = require('workbox-routing');
 const { CacheableResponsePlugin } = require('workbox-cacheable-response');
 const { ExpirationPlugin } = require('workbox-expiration');
@@ -24,7 +24,48 @@ warmStrategyCache({
   strategy: pageCache,
 });
 
-registerRoute(({ request }) => request.mode === 'navigate', pageCache);
+registerRoute(
+  ({ request }) => request.mode === 'navigate', pageCache);
+
+// registerRoute(
+//   // Here we define the callback function that will filter the requests we want to cache (in this case, JS and CSS files)
+//   ({ request }) => ['style', 'script', 'worker'].includes(request.destination),
+//   new StaleWhileRevalidate({
+//     // Name of the cache storage.
+//     cacheName: 'asset-cache',
+//     plugins: [
+//       // This plugin will cache responses with these headers to a maximum-age of 30 days
+//       new CacheableResponsePlugin({
+//         statuses: [0, 200],
+//       }),
+//     ],
+//   })
+// );
+
 
 // TODO: Implement asset caching
-registerRoute();
+// const cacheName = 'static-resources';
+// const matchCallback = ({ request }) => {
+//   console.log(request);
+//   return (
+//     // CSS
+//     request.destination === 'style' ||
+//     // JavaScript
+//     request.destination === 'script'
+//   );
+// };
+
+// registerRoute(
+//   matchCallback,
+//   new StaleWhileRevalidate({
+//     cacheName,
+//     plugins: [
+//       new CacheableResponsePlugin({
+//         statuses: [0, 200],
+//       }),
+//     ],
+//   })
+// );
+
+
+//registerRoute();
